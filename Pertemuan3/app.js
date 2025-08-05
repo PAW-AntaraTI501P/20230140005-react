@@ -2,7 +2,12 @@ const express = require('express');
 
 const app = express();
 const port = 3000;
+const todoRoutes = require("./routes/todo.js");
+const { todos } = require("./routes/todo.js");
+
 app.use(express.json());
+app.use('/todos', todoRoutes);
+
 
 app.set('view engine', 'ejs');
 
@@ -14,8 +19,8 @@ app.get("/contact", (req, res) => {
     res.render("contact");
 });
 
-app.use((req, res, next) => {
-    res.status(404).render("404 - Page Not Found");
+app.use((req, res) => {
+    res.status(404).send("404 - Page Not Found");
 });
 
 app.listen(port, () => {
