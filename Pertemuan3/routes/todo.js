@@ -19,6 +19,19 @@ router.get("/:id", (req, res) => {
   res.json(todo);
 });
 
+router.delete('/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = todos.findIndex(todo => todo.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ error: 'Todo dengan ID tersebut tidak ditemukan.' });
+  }
+
+  const deleted = todos.splice(index, 1);
+  res.json(deleted[0]);
+});
+
+
 // Endpoint untuk menambahkan tugas baru
 router.post("/", (req, res) => {
   const newTodo = {
