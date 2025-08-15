@@ -6,7 +6,9 @@ const todoRoutes = require("./routes/tododb.js");
 const { todos } = require("./routes/todo.js");
 const db = require("./Database/db.js");
 const port = process.env.PORT || 3000;
-
+const expressLayouts = require("express-ejs-layouts");
+app.use(expressLayouts);
+app.set('layout', 'layouts/main-layout');
 app.use(express.json());
 app.use("/todos", todoRoutes);
 
@@ -14,7 +16,7 @@ app.use("/todos", todoRoutes);
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
-    res.render("index");
+    res.render("index")
 });
 
 app.get("/contact", (req, res) => {
@@ -25,7 +27,7 @@ app.get("/todos-data", (req, res) => {
     res.json(todos);
 });
 
-app.get("/todos-list", (req, res) => {
+app.get("/todo-list", (req, res) => {
     res.render("todos-page", { todos: todos });
 });
 
