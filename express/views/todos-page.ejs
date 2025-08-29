@@ -1,0 +1,251 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+  />
+  <title>Daftar Tugas Saya</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f4f8, #d9e4ec);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #555;
+    }
+
+    .list-group-item {
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: none;
+      background: #f9fbfd;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .list-group-item:hover {
+      transform: translateX(3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .form-control {
+      border-radius: 8px;
+      box-shadow: none;
+    }
+
+    .btn {
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #4caf50, #81c784);
+      border: none;
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #43a047, #66bb6a);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #43e97b, #38f9d7);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #ff9800, #ffc107);
+      border: none;
+    }
+
+    .btn-warning:hover {
+      background: linear-gradient(135deg, #fb8c00, #ffb300);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #f44336, #e57373);
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #d32f2f, #ef5350);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-secondary {
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1>Daftar Tugas Saya</h1>
+    <p>Ini adalah halaman daftar tugas saya.</p>
+
+    <!-- Notifikasi -->
+    <div id="alert-container"></div>
+
+    <!-- Daftar tugas -->
+    <ul id="todo-list" class="list-group mb-4"></ul>
+
+    <!-- Form input -->
+    <div class="form-group">
+      <input type="text" id="taskInput" class="form-control" placeholder="Tugas" />
+      <input type="number" id="taskId" class="form-control mt-2" placeholder="ID (untuk PUT/DELETE)" />
+    </div>
+
+    <!-- Tombol Aksi -->
+    <button class="btn btn-success" onclick="getTodos()">GET</button>
+    <button class="btn btn-primary" onclick="postTodo()">POST</button>
+    <button class="btn btn-warning" onclick="putTodo()">PUT</button>
+    <button class="btn btn-danger" onclick="deleteTodo()">DELETE</button>
+    <a href="/" class="btn btn-secondary ml-2">Go to Home</a>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/todos';
+
+    function showMessage(msg, type = 'success') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = msg;
+      document.getElementById('alert-container').innerHTML = '';
+      document.getElementById('alert-container').appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 2000);
+    }
+
+    function getTodos() {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById('todo-list');
+          list.innerHTML = '';
+          data.forEach(todo => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.textContent = `ID: ${todo.id} Tugas: ${todo.task}`;
+            list.appendChild(li);
+          });
+        });
+    }
+
+    function postTodo() {
+      const task = document.getElementById('taskInput').value.trim();
+      if (!task) {
+        showMessage('Task tidak boleh kosong!', 'danger');
+        return;
+      }
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task })
+      })
+      .then(res => res.json())
+      .then(() => {
+        showMessage('Tugas berhasil ditambahkan!', 'success');
+        document.getElementById('taskInput').value = '';
+        getTodos();
+      });
+    }
+
+    function putTodo() {
+      const id = document.getElementById('taskId').value.trim();
+      const task = document.getElementById('taskInput').value.trim();
+
+      if (!id || !task) {
+        showMessage('ID dan Task wajib diisi!', 'danger');
+        return;
+      }
+
+      fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => {
+            throw new Error(err.error || 'Gagal mengupdate tugas!');
+          });
+        }
+        return res.json();
+      })
+      .then(() => {
+        showMessage('Tugas berhasil diupdate!', 'success');
+        document.getElementById('taskInput').value = '';
+        document.getElementById('taskId').value = '';
+        getTodos();
+      })
+      .catch(err => {
+        showMessage(err.message, 'danger');
+      });
+    }
+
+    function deleteTodo() {
+      const id = document.getElementById('taskId').value.trim();
+      if (!id) {
+        showMessage('ID harus diisi untuk menghapus!', 'danger');
+        return;
+      }
+
+      fetch(`${API_URL}/${id}`, {
+        method: 'DELETE'
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => {
+            throw new Error(err.error || 'Gagal menghapus tugas!');
+          });
+        }
+        return res.json();
+      })
+      .then(() => {
+        showMessage('Tugas berhasil dihapus!', 'success');
+        document.getElementById('taskId').value = '';
+        document.getElementById('taskInput').value = '';
+        getTodos();
+      })
+      .catch(err => {
+        showMessage(err.message, 'danger');
+      });
+    }
+
+    window.onload = getTodos;
+  </script>
+</body>
+</html>
