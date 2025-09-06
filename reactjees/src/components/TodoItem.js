@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
 const TodoItem = ({ todo, onToggleCompleted, onDeleteTodo, onEditTodo }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -7,67 +8,44 @@ const TodoItem = ({ todo, onToggleCompleted, onDeleteTodo, onEditTodo }) => {
   const handleSave = () => {
     if (editedTask.trim() !== "") {
       onEditTodo(todo.id, editedTask);
-      setIsEditing(false); // keluar dari mode edit
+      setIsEditing(false);
     }
   };
 
   return (
-    <li
-      style={{
-        marginBottom: "10px",
-        border: "1px solid white",
-        padding: "10px",
-        borderRadius: "8px",
-        backgroundColor: todo.completed ? "#2d3d3d" : "transparent",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-      }}
+    <motion.li
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: 50 }}
+      transition={{ duration: 0.3 }}
+      className={`p-4 rounded-lg shadow flex flex-col gap-3 ${
+        todo.completed ? "bg-green-100" : "bg-white"
+      }`}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-          justifyContent: "space-between",
-        }}
-      >
+      <div className="flex justify-between items-center">
         {isEditing ? (
           <input
             type="text"
             value={editedTask}
             onChange={(e) => setEditedTask(e.target.value)}
-            style={{
-              flex: 1,
-              marginRight: "10px",
-              padding: "5px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
+            className="flex-1 mr-3 px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-400"
           />
         ) : (
           <h3
-            style={{
-              margin: 0,
-              textDecoration: todo.completed ? "line-through" : "none",
-            }}
+            className={`text-lg font-medium ${
+              todo.completed ? "line-through text-gray-500" : "text-gray-800"
+            }`}
           >
             {todo.task}
           </h3>
         )}
 
-        <div style={{ display: "flex", gap: "5px" }}>
+        <div className="flex gap-2">
           {isEditing ? (
             <>
               <button
                 onClick={handleSave}
-                style={{
-                  padding: "5px 10px",
-                  borderRadius: "4px",
-                  backgroundColor: "lightblue",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
               >
                 Simpan
               </button>
@@ -76,14 +54,7 @@ const TodoItem = ({ todo, onToggleCompleted, onDeleteTodo, onEditTodo }) => {
                   setIsEditing(false);
                   setEditedTask(todo.task);
                 }}
-                style={{
-                  padding: "5px 10px",
-                  borderRadius: "4px",
-                  backgroundColor: "gray",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500 transition"
               >
                 Batal
               </button>
@@ -92,40 +63,23 @@ const TodoItem = ({ todo, onToggleCompleted, onDeleteTodo, onEditTodo }) => {
             <>
               <button
                 onClick={() => onToggleCompleted(todo.id, todo.completed)}
-                style={{
-                  padding: "5px 10px",
-                  borderRadius: "4px",
-                  backgroundColor: todo.completed ? "salmon" : "lightgreen",
-                  color: "#282c34",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className={`px-3 py-1 rounded text-white transition ${
+                  todo.completed
+                    ? "bg-yellow-500 hover:bg-yellow-600"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
               >
                 {todo.completed ? "Belum Selesai" : "Selesai"}
               </button>
               <button
                 onClick={() => setIsEditing(true)}
-                style={{
-                  padding: "5px 10px",
-                  borderRadius: "4px",
-                  backgroundColor: "orange",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
               >
                 Edit
               </button>
               <button
                 onClick={() => onDeleteTodo(todo.id)}
-                style={{
-                  padding: "5px 10px",
-                  borderRadius: "4px",
-                  backgroundColor: "tomato",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
               >
                 Hapus
               </button>
@@ -133,7 +87,7 @@ const TodoItem = ({ todo, onToggleCompleted, onDeleteTodo, onEditTodo }) => {
           )}
         </div>
       </div>
-    </li>
+    </motion.li>
   );
 };
 

@@ -1,59 +1,34 @@
-
-import React, { useState } from "react";
+import { useState } from "react";
 
 const TodoForm = ({ onAddTodo }) => {
-  const [newTask, setNewTask] = useState("");
-
-  const handleInputChange = (e) => {
-    setNewTask(e.target.value);
-  };
+  const [task, setTask] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (newTask) {
-      onAddTodo(newTask);
-      setNewTask("");
-    }
+    if (!task.trim()) return;
+    onAddTodo(task);
+    setTask("");
   };
 
   return (
-    <div
-      style={{
-        marginBottom: "20px",
-        padding: "20px",
-        border: "1px solid #fff",
-        borderRadius: "8px",
-      }}
+    <form
+      onSubmit={handleSubmit}
+      className="flex gap-3 w-full"
     >
-      <h2>Tambah Todo Baru</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+      <input
+        type="text"
+        value={task}
+        onChange={(e) => setTask(e.target.value)}
+        placeholder="Tambah todo baru..."
+        className="flex-grow px-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none"
+      />
+      <button
+        type="submit"
+        className="px-5 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg shadow transition"
       >
-        <input
-          type="text"
-          name="task"
-          placeholder="Tambahkan tugas baru..."
-          value={newTask}
-          onChange={handleInputChange}
-          required
-          style={{ padding: "8px", borderRadius: "4px", border: "none" }}
-        />
-        <button
-          type="submit"
-          style={{
-            padding: "10px",
-            backgroundColor: "#61dafb",
-            color: "#282c34",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Tambah
-        </button>
-      </form>
-    </div>
+        ➕ Add
+      </button>
+    </form>
   );
 };
 

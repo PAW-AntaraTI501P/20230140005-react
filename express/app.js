@@ -5,13 +5,23 @@ const app = express();
 const todoRoutes = require("./routes/tododb.js");
 const { todos } = require("./routes/todo.js");
 const db = require("./Database/db.js");
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
+const SECRET_KEY = process.env.SECRET_KEY;
 const expressLayouts = require("express-ejs-layouts");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
 app.use(expressLayouts);
 app.set('layout', 'layouts/main-layout');
 app.use(express.json());
 app.use("/todos", todoRoutes);
 
+
+app.use(cors({
+  origin: "http://localhost:3000",
+  methods: ["GET","POST","PUT","DELETE"],
+  credentials: true
+}));
 
 app.set("view engine", "ejs");
 
@@ -37,6 +47,55 @@ app.get("/todo-view", (req, res) => {
         res.render("todo", { todos: todos });
     });
 });
+
+
+app.post("/api/register", (req, res) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Semua field wajib diisi" });
+  }
+
+
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+  db.query(sql, [username, email, hashedPassword], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Gagal register user" });
+    }
+    res.json({ message: "Register berhasil", userId: result.insertId });
+  });
+});
+
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const sql = "SELECT * FROM users WHERE email = ?";
+  db.query(sql, [email], (err, results) => {
+    if (err) return res.status(500).json({ error: "Database error" });
+    if (results.length === 0) {
+      return res.status(401).json({ error: "Email tidak ditemukan" });
+    }
+
+    const user = results[0];
+
+    
+    const isValid = bcrypt.compareSync(password, user.password);
+    if (!isValid) {
+      return res.status(401).json({ error: "Password salah" });
+    }
+
+
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
+      expiresIn: "1h",
+    });
+
+    res.json({ message: "Login berhasil", token });
+  });
+});
+
 
 // GET: Mengambil semua todos
 app.get("/api/todos", (req, res) => {

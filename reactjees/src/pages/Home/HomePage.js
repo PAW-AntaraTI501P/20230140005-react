@@ -1,41 +1,43 @@
+import { motion } from "framer-motion";
 
-import React from "react";
-import { Link } from "react-router-dom";
-
-const HomePage = () => {
-  const containerStyle = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    textAlign: "center",
-    backgroundColor: "#282c34",
-    color: "white",
-    fontFamily: "sans-serif",
-  };
-
-  const buttonStyle = {
-    padding: "10px 20px",
-    fontSize: "1.2em",
-    marginTop: "20px",
-    backgroundColor: "#61dafb",
-    color: "#282c34",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    textDecoration: "none",
-  };
-
+export default function HomePage() {
   return (
-    <div style={containerStyle}>
-      <h1>Selamat Datang di Aplikasi Todo List</h1>
-      <p>Kelola semua tugas Anda dengan mudah dan efisien.</p>
-      <Link to="/todos" style={buttonStyle}>
-        Lihat Daftar Todo
-      </Link>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white text-center px-6">
+      <motion.h1
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        className="text-5xl font-extrabold mb-4 drop-shadow-lg"
+      >
+        Selamat Datang 👋
+      </motion.h1>
+      
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        className="text-lg mb-8 max-w-lg"
+      >
+        Ini adalah aplikasi Todo modern dengan React + Express + MySQL.  
+        Mulai catat kegiatanmu sekarang!
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, duration: 0.8 }}
+        className="flex gap-4"
+      >
+        <a href="/todo" className="px-6 py-3 bg-white text-indigo-700 rounded-xl shadow-lg font-semibold hover:bg-gray-200 transition">
+          🚀 Lihat Todo
+        </a>
+        <a href="/register" className="px-6 py-3 bg-yellow-400 text-black rounded-xl shadow-lg font-semibold hover:bg-yellow-300 transition">
+          📝 Register
+        </a>
+        <a href="/login" className="px-6 py-3 bg-green-400 text-black rounded-xl shadow-lg font-semibold hover:bg-green-300 transition">
+          🔑 Login
+        </a>
+      </motion.div>
     </div>
   );
-};
-
-export default HomePage;
+}
